@@ -40,12 +40,19 @@ function configureBot(bot) {
     return null
   }
 
+  // Finds the given block and digs it
+  async function digBlock(block) {
+    await bot.dig(bot.blockAt(block.position)) // We do this in case the block changed by the time we got there
+    bot.chat('I dug up a ' + block.displayName)
+  }
+
   // Travels to a given block. You should `await` this function, to avoid doing anything before you get to that block
   // Throws an error if we cannot find or reach that block
   async function travelToBlock(block) {
     bot.pathfinder.setMovements(defaultMove)
-    await bot.pathfinder.goto(new GoalLookAtBlock(block.position, bot.world, { reach: 4 }))
+    await bot.pathfinder.goto(new GoalLookAtBlock(block.position, bot.world, {reach: 4}))
     bot.chat("Got to the block!")
+    await digBlock(block)
   }
 
   bot.on('chat', async (username, message) => {
