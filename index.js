@@ -40,6 +40,14 @@ function configureBot(bot) {
     return null
   }
 
+  // Travels to a given block. You should `await` this function, to avoid doing anything before you get to that block
+  // Throws an error if we cannot find or reach that block
+  async function travelToBlock(block) {
+    bot.pathfinder.setMovements(defaultMove)
+    await bot.pathfinder.goto(new GoalLookAtBlock(block.position, bot.world, { reach: 4 }))
+    bot.chat("Got to the block!")
+  }
+
   bot.on('chat', async (username, message) => {
     try {
       if (username === bot.username) return
@@ -48,6 +56,7 @@ function configureBot(bot) {
         if (block) {
           console.log(block)
           bot.chat(`I found a block of type ${block.displayName} at location ${JSON.stringify(block.position)}`)
+          await travelToBlock(block)
         } else {
           bot.chat("I couldn't find that kind of block!")
         }
